@@ -43,6 +43,8 @@ class MidiAnalyzer:
             "pitchwheel": 0,
             "sysex": 0,
             "quarter_frame": 0,
+            "time_signature": 0,
+            "key_signature": 0,
             "songpos": 0,
             "song_select": 0,
             "tune_request": 0,
@@ -60,19 +62,70 @@ class MidiAnalyzer:
 
         return midi_parameters
 
-    # Control change control=64 es el sustain, es el uso del pedal
+    def get_time_signature(self):
+        result = 0
 
-    # El channel parece indicar el "instrumento", se podria hacer algo para poner un canal 2 para la mano izquierda
-    # para todas las teclas por debajo de una en concreto
-    # Cantidad de notas
-    # Variabilidad en la forma de presionar las notas (velocity)
-    # Numero de instrumentos (realmente esto solo indica si la cancion es tocable o no)
-    # Distancia entre la nota mas baja y la mas alta
-    # Acordes (esto es muy subjetivo, pero podemos decir que los acordes de teclas blancas son mas faciles)
-    # El problema de esto es detectar un acorde entre todas las notas
-    # Uso del sustain
-    # Compas
-    # Armadura
+        for msg in self.midi:
+            if msg.type == "time_signature":
+                if msg.numerator == 2 and msg.denominator == 4:
+                    result = max(result, 0.2)
+                elif msg.numerator == 3 and msg.denominator == 4:
+                    result = max(result, 0.2)
+                elif msg.numerator == 4 and msg.denominator == 4:
+                    result = max(result, 0.2)
+                elif msg.numerator == 6 and msg.denominator == 8:
+                    result = max(result, 0.5)
+                elif msg.numerator == 9 and msg.denominator == 8:
+                    result = max(result, 0.5)
+                elif msg.numerator == 12 and msg.denominator == 8:
+                    result = max(result, 0.5)
+                elif msg.numerator == 5 and msg.denominator == 4:
+                    result = max(result, 0.8)
+                elif msg.numerator == 7 and msg.denominator == 8:
+                    result = max(result, 0.8)
+                elif msg.numerator == 11 and msg.denominator == 8:
+                    result = max(result, 0.8)
+                else:
+                    # Uncommon time signature
+                    result = 1
+
+        return result
+
+    def get_key_signature(self):
+        result = 0
+
+        key_signatures = {
+            "Em": 0.1,
+            "E": 0.2,
+            "C": 0.3,
+            "Gm": 0.4,
+            "Dm": 0.5,
+            "F": 0.6,
+            "D": 0.7,
+            "Cm": 0.8,
+            "F#": 0.9,
+            "Bb": 0.35,
+            "Eb": 0.45,
+            "Ab": 0.55,
+            "Db": 0.65,
+            "Gb": 0.75,
+            "Cb": 0.85,
+            "G": 0.9
+        }
+
+        for msg in self.midi:
+            if msg.type == "key_signature":
+
+                try:
+                    result = key_signatures[msg.key]
+                except KeyError:
+                    print("Not fouund")
+                    print(msg.key)
+                    result = 1
+
+                break
+
+        return result
 
     def get_velocity(self):
         """How keys are pressed is something that can increase the difficulty of a piece"""
@@ -192,7 +245,7 @@ class MidiAnalyzer:
                 total += msg.time
             except:
                 pass
-        self.values["duration"] = total
+        self.values["duration"] = round(total, 2)
 
         result = 0
         if total > 600:
@@ -210,6 +263,14 @@ class MidiAnalyzer:
 
     def get_difficulty(self):
         parameters = [
+            {
+                "weight": 1,
+                "value": self.get_time_signature()
+            },
+            {
+                "weight": 1,
+                "value": self.get_key_signature()
+            },
             {
                 "weight": 1,
                 "value": self.get_velocity()
