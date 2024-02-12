@@ -137,6 +137,7 @@ class MidiAnalyzer:
                 velocity.add(msg.velocity)
 
         diff = len(velocity)
+        self.values["velocity"] = diff
 
         if diff > 100:
             result = 1
