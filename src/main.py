@@ -106,3 +106,7 @@ def main():
         delete(folder)
     else:
         print("Invalid option")
+
+
+if __name__ == "__main__":
+    main()
