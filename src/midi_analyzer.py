@@ -10,8 +10,9 @@ class MidiAnalyzer:
         self.values = dict()
         self.values["file"] = os.path.basename(midi.filename)
         self.values["abspath"] = midi.filename
-        self.values["hash"] = self.sha256_hash_file()
+        self.values["hash"] = self.calculate_md5()
         self.get_difficulty()
+        self.values["synthesia"] = f"<SongInfo hash='{self.values['hash']}' version='1' difficulty='{str(self.values['difficulty']*100)}' />"
 
     def __str__(self):
         result = "",
@@ -19,15 +20,15 @@ class MidiAnalyzer:
             result += f"{k}: {v}\n",
         return result
 
-    def sha256_hash_file(self):
-        sha256_hash = hashlib.sha256()
+    def calculate_md5(self):
+        with open(self.midi.filename, 'rb') as f:
+            # Read the file in chunks to avoid loading the entire file into memory
+            chunk_size = 1024
+            md5_hash = hashlib.md5()
+            while chunk := f.read(chunk_size):
+                md5_hash.update(chunk)
+        return md5_hash.hexdigest()
 
-        with open(self.midi.filename, "rb") as file:
-            # Read the file in chunks to handle large files
-            for chunk in iter(lambda: file.read(4096), b""):
-                sha256_hash.update(chunk)
-
-        return sha256_hash.hexdigest()
 
     def get_values(self):
         return self.values
@@ -119,8 +120,6 @@ class MidiAnalyzer:
                 try:
                     result = key_signatures[msg.key]
                 except KeyError:
-                    print("Not fouund")
-                    print(msg.key)
                     result = 1
 
                 break

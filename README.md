@@ -31,6 +31,15 @@ Song with 100 notes and no sustain pedal: 0.8*0+0.2*0 = 0
 
 I'm no expert in music theory but this works more or less until more parameters are added and existing ones are refined to be more accurate.
 
+## A note on Synthesia
+
+Synthesia's settings folder (usually found in C:\Users\<user>\AppData\Roaming\Synthesia)) has a file called songInfo.xml.
+This file contains information about songs, including the difficulty.
+The Excel sheet produced by this application automatically generates the XML nodes to be copypasted into that file, so you can have this information directly into Synthesia.
+
+Just copy the "synthesia" column into this file.
+
+
 ## How to use it
 
 You will find a Windows executable inside the dist folder.

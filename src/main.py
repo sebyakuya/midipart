@@ -24,7 +24,7 @@ def report(folder, output):
     df = pd.DataFrame(
         columns=["file", "notes", "min_note", "max_note", "diff_note", "velocity", "sustain", "channels", "duration",
                  "difficulty",
-                 "hash", "abspath"])
+                 "hash", "abspath", "synthesia"])
 
     print(f"Found {len(midi_files)} MIDI files")
 
