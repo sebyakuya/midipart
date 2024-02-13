@@ -1,30 +1,28 @@
+import argparse
 import os
 
 import pandas as pd
-import typer as typer
 from rich.progress import Progress
-
+from rich.prompt import Prompt
+from rich import print
 from midipart.src.midi_analyzer import MidiAnalyzer
 from midipart.src.midi_functions import get_midi_files_in_folder, get_midi
 
-app = typer.Typer(no_args_is_help=True, add_completion=False, add_help_option=False)
+parser = argparse.ArgumentParser(
+    prog='MIDIPART',
+    description='MIDI Piano Assistant Rating Tool',
+    epilog='A tool to rate the difficulty of MIDI files')
+parser.add_argument('--folder', type=str, help='Text to be printed')
+parser.add_argument('--output', type=str, help='Text to be printed')
 
 
-@app.callback()
-def callback():
-    """MIDIPART: MIDI Piano Assessment Rating Tool"""
-
-
-@app.command()
-def report(folder: str = "", output: str = ""):
-    if folder == "" or output == "":
-        print("Run the following command: midipart report --folder /path/to/songs --output /path/to/store/report.xlsx")
-        exit(-1)
+def report(folder, output):
 
     midi_files = get_midi_files_in_folder(folder)
 
     df = pd.DataFrame(
-        columns=["file", "notes", "min_note", "max_note", "diff_note", "sustain", "channels", "duration", "difficulty",
+        columns=["file", "notes", "min_note", "max_note", "diff_note", "velocity", "sustain", "channels", "duration",
+                 "difficulty",
                  "hash", "abspath"])
 
     print(f"Found {len(midi_files)} MIDI files")
@@ -44,18 +42,14 @@ def report(folder: str = "", output: str = ""):
     df.to_excel(os.path.join(output, "midipart.xlsx"))
 
 
-@app.command()
-def delete(folder: str = ""):
-    if folder == "":
-        print("Run the following command: midipart delete --folder /path/to/songs")
-        exit(-1)
+def delete(folder):
 
     midi_files = get_midi_files_in_folder(folder)
 
     print(f"Found {len(midi_files)} MIDI files")
 
     hashes = set()
-    to_delete  = set()
+    to_delete = set()
     with Progress() as progress:
         task1 = progress.add_task("[red]Processing...", total=len(midi_files))
 
@@ -80,4 +74,29 @@ def delete(folder: str = ""):
 
 
 if __name__ == "__main__":
-    app()
+    args = parser.parse_args()
+
+    print("##########################################")
+    print("MIDIPART: MIDI Piano Assistant Rating Tool")
+    print("##########################################")
+    if not args.folder:
+        print("No songs folder provided. Ensure that you indicated a valid path. "
+              "E.g. [green]midipart --folder /path/to/midi")
+        exit(-1)
+
+    print("Available actions:")
+    print("[red]1.[/red] Report: creates an Excel spreadsheet with the information from MIDI files")
+    print("[red]2.[/red] Delete: removes MIDI files that are duplicated")
+    action = Prompt.ask("What to do? Select number and press Enter", choices=["1", "2"])
+
+    if action == "1":
+        if not args.output:
+            print("No output path provided. Ensure that you indicated a valid path. "
+                  "E.g. [green]midipart --folder /path/to/midi --output /path/to/export/result")
+            exit(-1)
+        report(args.folder, args.output)
+    elif action == "2":
+        delete(args.folder)
+    else:
+        print("Invalid option")
+

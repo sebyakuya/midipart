@@ -1,3 +1,6 @@
 venv
 .idea
 songs
+*__pycache__
+*.pyc
+midipart.xlsx
