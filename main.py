@@ -2,11 +2,13 @@ import argparse
 import os
 
 import pandas as pd
-from rich.progress import Progress
-from rich.prompt import Prompt
+
 from rich import print
-from midipart.src.midi_analyzer import MidiAnalyzer
-from midipart.src.midi_functions import get_midi_files_in_folder, get_midi
+from rich.progress import Progress
+from rich.prompt import Prompt, Confirm
+
+from src.midi_analyzer import MidiAnalyzer
+from src.midi_functions import get_midi_files_in_folder, get_midi
 
 parser = argparse.ArgumentParser(
     prog='MIDIPART',
@@ -17,7 +19,6 @@ parser.add_argument('--output', type=str, help='Text to be printed')
 
 
 def report(folder, output):
-
     midi_files = get_midi_files_in_folder(folder)
 
     df = pd.DataFrame(
@@ -43,7 +44,6 @@ def report(folder, output):
 
 
 def delete(folder):
-
     midi_files = get_midi_files_in_folder(folder)
 
     print(f"Found {len(midi_files)} MIDI files")
@@ -66,8 +66,8 @@ def delete(folder):
 
             progress.update(task1, advance=1)
 
-    x = input("Delete? y/n")
-    if x == "y":
+    x = Confirm.ask("Delete these files? Cannot be undone!")
+    if x:
         for midi_file in to_delete:
             print(f"Removing {midi_file}")
             os.remove(midi_file)
@@ -75,14 +75,18 @@ def delete(folder):
 
 if __name__ == "__main__":
     args = parser.parse_args()
+    folder = args.folder
+    output = args.output
 
     print("##########################################")
     print("MIDIPART: MIDI Piano Assistant Rating Tool")
     print("##########################################")
-    if not args.folder:
-        print("No songs folder provided. Ensure that you indicated a valid path. "
-              "E.g. [green]midipart --folder /path/to/midi")
-        exit(-1)
+    if not folder:
+        print("No songs folder provided")
+        folder = Prompt.ask("Indicate a valid path:")
+        if not os.path.isdir(folder):
+            print("Error analyzing folder path")
+            exit(-1)
 
     print("Available actions:")
     print("[red]1.[/red] Report: creates an Excel spreadsheet with the information from MIDI files")
@@ -90,13 +94,15 @@ if __name__ == "__main__":
     action = Prompt.ask("What to do? Select number and press Enter", choices=["1", "2"])
 
     if action == "1":
-        if not args.output:
-            print("No output path provided. Ensure that you indicated a valid path. "
-                  "E.g. [green]midipart --folder /path/to/midi --output /path/to/export/result")
-            exit(-1)
-        report(args.folder, args.output)
+        if not output:
+            print("No output folder provided")
+            output = Prompt.ask("Indicate a valid path:")
+            if not os.path.isdir(output):
+                print("Error analyzing output path")
+                exit(-1)
+
+        report(folder, output)
     elif action == "2":
-        delete(args.folder)
+        delete(folder)
     else:
         print("Invalid option")
-
