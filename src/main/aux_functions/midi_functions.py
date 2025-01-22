@@ -2,6 +2,8 @@ import os
 
 from mido import MidiFile
 
+from io import BufferedReader
+
 
 def get_midi_files_in_folder(folder):
     midi_files = []
@@ -37,6 +39,20 @@ def get_midi(path):
         midi = ""
     return midi
 
+
+def get_midi_api(file):
+    try:
+
+        ass = file.read()
+        # Read the file-like object into memory
+        midi = MidiFile(ass)  # Use the stream attribute of the file object
+    except OSError:
+        print(f"Error reading the MIDI file.")
+        midi = ""
+    except Exception as e:
+        print(f"Error reading the MIDI file: {e}")
+        midi = ""
+    return midi
 
 def play_midi(midi):
     for msg in midi.play():

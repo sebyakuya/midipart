@@ -7,8 +7,8 @@ from rich import print
 from rich.progress import Progress
 from rich.prompt import Prompt, Confirm
 
-from src.midi_analyzer import MidiAnalyzer
-from src.midi_functions import get_midi_files_in_folder, get_midi
+from src.main.model.midi_analyzer import MidiAnalyzer
+from src.main.aux_functions.midi_functions import get_midi_files_in_folder, get_midi
 
 parser = argparse.ArgumentParser(
     prog='MIDIPART',
