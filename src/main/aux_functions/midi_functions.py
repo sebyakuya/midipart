@@ -40,20 +40,6 @@ def get_midi(path):
     return midi
 
 
-def get_midi_api(file):
-    try:
-
-        ass = file.read()
-        # Read the file-like object into memory
-        midi = MidiFile(ass)  # Use the stream attribute of the file object
-    except OSError:
-        print(f"Error reading the MIDI file.")
-        midi = ""
-    except Exception as e:
-        print(f"Error reading the MIDI file: {e}")
-        midi = ""
-    return midi
-
 def play_midi(midi):
     for msg in midi.play():
         if msg.type == "note_on" and msg.channel == 1:
