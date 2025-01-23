@@ -1,11 +1,9 @@
-from flask import jsonify
-
-from src.main.aux_functions.midi_functions import get_midi, is_midi_file
+from src.main.aux_functions.midi_functions import get_midi
 from src.main.model.midi_analyzer import MidiAnalyzer
 
 
 def test():
-    return jsonify({"message": "Hello from Flask!"})
+    return {"message": "Hello!"}
 
 
 def analyze_midi(midi_file):

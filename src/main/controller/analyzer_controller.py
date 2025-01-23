@@ -29,22 +29,8 @@ def analyze_file(file):
 def home():
     return test()
 
-# Additional endpoints can be added here
 @analyzer_blueprint.route('/api/analyze', methods=['POST'])
 def analyze_midi_endpoint():
-    if 'file' not in request.files:
-        return {"error": "No file part"}, 400
-
-    file = request.files['file']
-    result = analyze_file(file)
-
-    if "error" not in result:
-        return result, 200
-    else:
-        return result, 400
-
-@analyzer_blueprint.route('/api/analyzem', methods=['POST'])
-def analyze_midi_endpoint_multi():
     result = []
     for file in request.files.values():
         result.append(analyze_file(file))
