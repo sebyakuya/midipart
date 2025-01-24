@@ -3,7 +3,7 @@ from flask_cors import CORS
 from src.main.controller.analyzer_controller import analyzer_blueprint
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://l39q1vwefj.execute-api.eu-south-2.amazonaws.com"]}})
 
 # Register the blueprint for the analyzer controller
 app.register_blueprint(analyzer_blueprint)
