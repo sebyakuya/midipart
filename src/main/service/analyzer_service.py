@@ -7,10 +7,14 @@ def test():
 
 
 def analyze_midi(midi_file):
-    midi = get_midi(midi_file)
-    mclass = MidiAnalyzer(midi)
-    values = mclass.get_values()
-    return values
+    try:
+        print(f"Starting analysis of {midi_file}")
+        midi = get_midi(midi_file)
+        mclass = MidiAnalyzer(midi)
+        values = mclass.get_values()
+        return values
+    except Exception as e:
+        return {"error": f"MIDI file couldn't be analyzed: {e}"}
 
 
 
