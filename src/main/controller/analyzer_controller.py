@@ -18,6 +18,8 @@ def analyze_file(file):
         else:
             file_path = os.path.join("files", filename)
             file.save(file_path)
+            file_stats = os.stat(file_path)
+            print(file_stats)
             if not is_midi_file(file_path):
                 return {"error": "File is not a MIDI file. Please upload a valid .mid file."}
             else:
