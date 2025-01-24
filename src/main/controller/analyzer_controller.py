@@ -17,9 +17,17 @@ def analyze_file(file):
             return {"error": "File format not supported. Please upload a .mid file."}
         else:
             file_path = os.path.join("files", filename)
+
+            file.seek(0, os.SEEK_END)  # Move to the end of the file
+            file_size = file.tell()  # Get the current position (size of the file)
+            file.seek(0)  # Reset the file pointer to the beginning
+
+            print(f"File size: {file_size} bytes")
+            if file_size > 15 * 1024 * 1024:  # Check if file size exceeds 15 MB
+                return {"error": "File size exceeds 15 MB limit."}
+
             file.save(file_path)
-            #file_stats = os.stat(file_path)
-            #print(file_stats)
+
             if not is_midi_file(file_path):
                 return {"error": "File is not a MIDI file. Please upload a valid .mid file."}
             else:

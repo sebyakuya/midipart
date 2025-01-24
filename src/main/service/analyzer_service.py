@@ -14,7 +14,7 @@ def analyze_midi(midi_file):
         values = mclass.get_values()
         return values
     except Exception as e:
-        return {"error": f"MIDI file couldn't be analyzed: {e}"}
+        return {"error": f"MIDI file couldn't be analyzed. The file may be corrupted or is not a valid MIDI file"}
 
 
 
