@@ -30,9 +30,9 @@ def is_midi_file(file_path):
 
 def get_midi(path):
     try:
-        midi = MidiFile(path)
+        midi = MidiFile(path, charset="utf-8")
     except OSError as e:
-        print(f"Error reading {path}: {e}")
+        print(f"OSError reading {path}: {e}")
         midi = ""
     except Exception as e:
         print(f"Error reading {path}: {e}")
