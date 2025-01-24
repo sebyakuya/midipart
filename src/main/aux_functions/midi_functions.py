@@ -31,11 +31,11 @@ def is_midi_file(file_path):
 def get_midi(path):
     try:
         midi = MidiFile(path)
-    except OSError:
-        print(f"Error reading {path}")
+    except OSError as e:
+        print(f"Error reading {path}: {e}")
         midi = ""
-    except Exception:
-        print(f"Error reading {path}")
+    except Exception as e:
+        print(f"Error reading {path}: {e}")
         midi = ""
     return midi
 
